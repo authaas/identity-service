@@ -1,0 +1,4 @@
+[tools]
+"buf" = "latest"
+cargo-binstall = "latest"
+"cargo:cocogitto" = "latest"

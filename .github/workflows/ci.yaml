@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [default]
+    paths-ignore:
+      - CHANGELOG.md
+
+jobs:
+  commit-check:
+    name: CI
+    uses: katastroma/skeuotheke/.github/workflows/commit-check.yaml@v0
+
+  version-check:
+    name: CI
+    uses: katastroma/skeuotheke/.github/workflows/version-check.yaml@v0
+
+  validate:
+    name: CI / Buf
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Validate
+        uses: bufbuild/buf-action@v1
+        with:
+          token: ${{ secrets.BUF_TOKEN }}
+          lint: true
+          format: true
+          push: false
+
+  version:
+    name: CI
+    needs: [commit-check, version-check, validate]
+    uses: katastroma/skeuotheke/.github/workflows/version.yaml@v0
+    permissions:
+      contents: write
+    with:
+      GH_APP_ID: ${{ vars.SKEUOTHEKE_GH_APP_CLIENT_ID }}
+    secrets:
+      GH_APP_PRIVATE_KEY: ${{ secrets.SKEUOTHEKE_GH_APP_PRIVATE_KEY }}

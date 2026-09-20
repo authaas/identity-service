@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package identity;
+
+import "identity/principal.proto";
+
+// Service serves the operations on an identity that an authenticated,
+// authorized actor performs.
+service Service {
+  // Removes the identity. Refuses an unknown principal.
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+}
+
+message DeleteRequest {
+  identity.Principal principal = 1;
+}
+
+message DeleteResponse {}
